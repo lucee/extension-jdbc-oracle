@@ -61,7 +61,7 @@
 	
 	<cffunction name="getName" returntype="string" output="no"
 		hint="returns display name of the driver">
-		<cfreturn "Oracle 10g (Release 2)">
+		<cfreturn "Oracle 11g (Release 2)">
 	</cffunction>
 	
 	<cffunction name="getDescription" returntype="string" output="no"
