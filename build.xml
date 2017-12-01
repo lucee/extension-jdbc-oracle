@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="clean" basedir="." name="datasource-extension">
+	<description>
+        Building Datasource Extension
+    </description>
+  <!--
+  <property name="label" value="Microsoft SQL Server (Vendor Microsoft)"/>
+  <property name="id" value="7E673D15-D87C-41A6-8B5F1956528C605F"/>
+  -->
+  <property name="temp" location="temp"/>
+  <property name="dist"  location="dist"/>
+
+  <scriptdef name="trim" language="javascript">
+     <attribute name="text" />
+     <attribute name="property" />
+     <![CDATA[
+      var text = attributes.get("text");
+      project.setProperty(attributes.get("property"), text.trim());
+     ]]>
+  </scriptdef>
+
+
+  <scriptdef name="first" language="javascript">
+     <attribute name="text" />
+     <attribute name="property" />
+     <attribute name="default" />     
+     <![CDATA[
+      var text = attributes.get("text").trim();
+      var def = attributes.get("default");
+
+      if(def && def.indexOf('${')==-1)
+        text=def;
+
+      var arr=text.split(/\s+/);
+      text=arr[0];
+
+      project.setProperty(attributes.get("property"), text);
+     ]]>
+  </scriptdef>
+
+  <scriptdef name="updateProp" language="javascript">
+     <attribute name="name" />
+     <attribute name="value" />   
+     <![CDATA[
+      project.setProperty(attributes.get("name"), attributes.get("value"));
+     ]]>
+  </scriptdef>
+  
+
+
+  <scriptdef name="getDirFrom" language="javascript">
+     <attribute name="path" />
+     <attribute name="property" />
+     <![CDATA[
+      var path = attributes.get("path");
+      var index=path.lastIndexOf('/');
+      if(index==-1) index=path.lastIndexOf('\\');
+      path=path.substring(0,index);
+      
+      project.setProperty(attributes.get("property"), path);
+     ]]>
+  </scriptdef>
+
+  <scriptdef name="getNameFrom" language="javascript">
+     <attribute name="path" />
+     <attribute name="property" />
+     <![CDATA[
+      var path = attributes.get("path");
+      var index=path.lastIndexOf('/');
+      if(index==-1) index=path.lastIndexOf('\\');
+      path=path.substring(index+1);
+      
+      project.setProperty(attributes.get("property"), path);
+     ]]>
+  </scriptdef>
+
+  <scriptdef name="dot2line" language="javascript">
+     <attribute name="text" />
+     <attribute name="property" />
+     <![CDATA[
+      var text = attributes.get("text");
+      text=text.replace('.','_');
+      
+      project.setProperty(attributes.get("property"), text);
+     ]]>
+  </scriptdef>
+
+  <scriptdef name="unwrap" language="javascript">
+     <attribute name="text" />
+     <attribute name="property" />
+     <![CDATA[
+      var text = attributes.get("text");
+      text=text.trim();
+      if(text.startsWith('"') && text.endsWith('"')) {
+        text=text.substring(1,text.length()-1);
+      }
+      project.setProperty(attributes.get("property"), text);
+     ]]>
+  </scriptdef>
+
+
+
+  <macrodef name="loadmf">
+        <attribute name="jar"/>
+        <attribute name="prefix" default=""/>
+        <sequential>
+            <loadproperties>
+                <!-- Load the manifest entries -->
+                <zipentry zipfile="@{jar}" name="META-INF/MANIFEST.MF"/>
+                <!-- Add the prefix -->
+                <filterchain>
+                    <prefixlines prefix="@{prefix}"/>
+                </filterchain>
+            </loadproperties>
+        </sequential>
+    </macrodef>
+
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    
+    <delete dir="${temp}"/>
+    <delete dir="${dist}/"/>
+  </target>
+
+
+
+
+
+
+  <target name="dist" description="generate the distribution">
+    
+    <!-- jar -->
+    <path id="path.jar">
+      <fileset dir="." casesensitive="yes">
+        <include name="*.jar"/>
+      </fileset>
+    </path>
+    <property name="jar" refid="path.jar"/>
+    <getNameFrom path="${jar}" property="jarName"/>
+
+    <!-- logo
+    
+    <path id="path.logo">
+      <fileset dir="${dir}" casesensitive="yes">
+        <include name="*.png"/>
+      </fileset>
+    </path>
+    <property name="logo" refid="path.logo"/> -->
+
+
+
+    <!-- driver (cfc) -->
+    <path id="path.cfc">
+      <fileset dir="." casesensitive="yes">
+        <include name="*.cfc"/>
+      </fileset>
+    </path>
+    <property name="cfc" refid="path.cfc"/>
+    <getNameFrom path="${cfc}" property="cfcName"/>
+
+
+    <property file="./build.properties"/>
+    <unwrap text="${id}" property="id"/>
+    <unwrap text="${label}" property="label"/>
+    <unwrap text="${description}" property="desc"/>
+
+    <echo message="${id}"/>
+    <echo message="${label}"/>
+    <echo message="${desc}"/>
+    <echo message="${jar}"/>
+    <echo message="${cfc}"/>
+    <echo message="${cfcName}"/>
+    <echo message="${dir}"/>
+    <echo message="${prop}"/>
+
+
+    <!-- Read mf entries -->
+    <loadmf jar="${jar}" prefix="manifest."/>
+    <trim text="${manifest.Bundle-SymbolicName}" property="symbolicName"/>
+    <trim text="${manifest.Bundle-Version}" property="symbolicVersion"/>
+    
+    
+    
+    <!-- read class info -->
+    <unzip src="${jar}" dest="${temp}">
+      <patternset>
+        <include name="META-INF/services/java.sql.Driver" />
+      </patternset>
+    </unzip>
+
+
+    <!--
+    <loadfile property="className1"
+      srcFile="${temp}/META-INF/services/java.sql.Driver"/>
+    <first text="${className1}" property="className2" default="${defaultClassName}"/>
+    <trim text="${className2}" property="className3"/>
+    <unwrap text="${className3}" property="className"/>
+    -->
+    <echo message="Driver class name:${className}"/>
+
+
+    <property name="distl" location="${temp}/extension/${symbolicName}-${symbolicVersion}/"/>
+    
+    <mkdir dir="${distl}"/>
+      
+
+    <tstamp>
+     <format property="NOW" pattern="yyyy-MM-dd HH:mm:ss" />
+    </tstamp>
+
+    <!-- write the manifest -->
+    <echo file="${distl}/META-INF/MANIFEST.MF">Manifest-Version: 1.0
+Built-Date: ${NOW}
+version: "${symbolicVersion}"
+id: "${id}"
+name: "${label}"
+description: "${desc}"
+category: "Datasource"
+lucee-core-version: "5.0.0.019"
+start-bundles: false
+jdbc: "[{'label':'${label}','class':'${className}','bundleName':'${symbolicName}','bundleVersion':'${symbolicVersion}'}]"
+</echo>
+
+    <!-- copy the jars necessary -->
+    <copy file="${jar}" tofile="${distl}/jars/${jarName}"/>
+    
+    <!-- copy the jars necessary -->
+    <copy file="${cfc}" tofile="${distl}/context/admin/dbdriver/${cfcName}"/>
+
+    <!-- copy optional logo -->
+    <copy todir="${distl}/META-INF">
+      <fileset dir=".">
+        <include name="logo.png"/>
+      </fileset>
+    </copy>
+
+    
+
+    <!-- Zip everything  -->
+     <zip destfile="${dist}/${manifest.Bundle-SymbolicName}-${manifest.Bundle-Version}.lex">
+        <zipfileset dir="${distl}"/>
+    </zip>    
+  </target>
+
+	<target name="clean"  depends="dist" description="clean up" >
+		<delete dir="${temp}"/>
+	</target>
+
+</project>
