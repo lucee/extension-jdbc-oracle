@@ -134,6 +134,7 @@
     <path id="path.jar">
       <fileset dir="." casesensitive="yes">
         <include name="*.jar"/>
+        <exclude name="org.lucee.xdb-*.jar"/>
       </fileset>
     </path>
     <property name="jar" refid="path.jar"/>
@@ -222,8 +223,13 @@ start-bundles: false
 jdbc: "[{'label':'${label}','class':'${className}','bundleName':'${symbolicName}','bundleVersion':'${symbolicVersion}'}]"
 </echo>
 
-    <!-- copy the jars necessary -->
-    <copy file="${jar}" tofile="${distl}/jars/${jarName}"/>
+    <!-- copy the jars necessary
+    <copy file="${jar}" tofile="${distl}/jars/${jarName}"/> -->
+    <copy todir="${distl}/jars/">
+      <fileset dir=".">
+        <include name="*.jar"/>
+      </fileset>
+    </copy>
     
     <!-- copy the jars necessary -->
     <copy file="${cfc}" tofile="${distl}/context/admin/dbdriver/${cfcName}"/>
