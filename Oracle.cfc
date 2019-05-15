@@ -33,8 +33,8 @@
 	)>
     
     
-	<cfset this.className="oracle.jdbc.OracleDriver">
-	<cfset this.dsn="jdbc:oracle:{drivertype}:@{host}:{port}:{database}">
+	<cfset this.className="{class-name}">
+	<cfset this.dsn="{connString}">
 	<cfset this.dsnOld="jdbc:oracle:thin:@{host}:{port}:{database}">
 	
 	
@@ -61,12 +61,12 @@
 	
 	<cffunction name="getName" returntype="string" output="no"
 		hint="returns display name of the driver">
-		<cfreturn "Oracle 11g (Release 2)">
+		<cfreturn "{label}">
 	</cffunction>
 	
 	<cffunction name="getDescription" returntype="string" output="no"
 		hint="returns description for the driver">
-		<cfreturn "Oracle Database Driver to access a Oracle Database System.">
+		<cfreturn "{description}">
 	</cffunction>
 	
 	<cffunction name="getFields" returntype="array" output="no"

@@ -19,7 +19,23 @@
      ]]>
   </scriptdef>
 
+  
+  <scriptdef name="replace" language="javascript">
+     <attribute name="haystack" />
+     <attribute name="needle" />
+     <attribute name="repl" />
+     <attribute name="property" />
+     <![CDATA[
+      var text = attributes.get("haystack");
+      var needle = attributes.get("needle");
+      var repl = attributes.get("repl");
+      text=text.trim();
 
+      var regex = new RegExp(needle,'g');
+      text=text.replace(regex,repl);
+      project.setProperty(attributes.get("property"), text);
+     ]]>
+  </scriptdef>
 
   <scriptdef name="listFirst" language="javascript">
      <attribute name="text" />
@@ -218,6 +234,9 @@
     <trim text="${className2}" property="className3"/>
     <unwrap text="${className3}" property="className"/>
     -->
+
+    <unwrap text="${connstr}" property="_connstr"/>
+
     <echo message="Driver class name:${className}"/>
     <echo message="Driver bundle name:${bundleName}"/>
     <echo message="Driver bundle version:${bundleVersion}"/>
@@ -243,7 +262,7 @@ description: "${desc}"
 category: "Datasource"
 lucee-core-version: "5.0.0.019"
 start-bundles: false
-jdbc: "[{'label':'${label}','class':'${className}','bundleName':'${bundleName}','bundleVersion':'${bundleVersion}'}]"
+jdbc: "[{'label':'${label}','id':'${jdbcid}','connectionString':'${_connstr}','class':'${className}','bundleName':'${bundleName}','bundleVersion':'${bundleVersion}'}]"
 </echo>
 
     <!-- copy the jars necessary
@@ -256,6 +275,15 @@ jdbc: "[{'label':'${label}','class':'${className}','bundleName':'${bundleName}',
     
     <!-- copy the jars necessary -->
     <copy file="${cfc}" tofile="${distl}/context/admin/dbdriver/${cfcName}"/>
+    <loadfile property="content1" srcFile="${distl}/context/admin/dbdriver/${cfcName}" />
+    <replace haystack="${content1}" needle="{class-name}" repl="${className}" property="content2"/>
+    <replace haystack="${content2}" needle="{bundle-name}" repl="${symbolicName}" property="content3"/>
+    <replace haystack="${content3}" needle="{id}" repl="${jdbcid}" property="content4"/>
+    <replace haystack="${content4}" needle="{label}" repl="${label}" property="content5"/>
+    <replace haystack="${content5}" needle="{description}" repl="${desc}" property="content6"/>
+    <replace haystack="${content6}" needle="{connString}" repl="${_connstr}" property="content7"/>
+    <echo message="${content7}" file="${distl}/context/admin/dbdriver/${cfcName}"/>
+
 
     <!-- copy optional logo -->
     <copy todir="${distl}/META-INF">
