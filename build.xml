@@ -20,6 +20,25 @@
   </scriptdef>
 
 
+
+  <scriptdef name="listFirst" language="javascript">
+     <attribute name="text" />
+     <attribute name="property" />
+     <attribute name="delimiter" />     
+     <![CDATA[
+      var text = attributes.get("text").trim();
+      var del = attributes.get("delimiter");
+
+      var index=text.indexOf(del);
+      var rtn=text;
+      if(index!=-1) {
+        rtn=text.substring(0,index);
+      }
+
+      project.setProperty(attributes.get("property"), rtn);
+     ]]>
+  </scriptdef>
+
   <scriptdef name="first" language="javascript">
      <attribute name="text" />
      <attribute name="property" />
@@ -134,6 +153,7 @@
     <path id="path.jar">
       <fileset dir="." casesensitive="yes">
         <include name="*.jar"/>
+        <exclude name="org.lucee.xdb-*.jar"/>
       </fileset>
     </path>
     <property name="jar" refid="path.jar"/>
@@ -177,8 +197,9 @@
 
     <!-- Read mf entries -->
     <loadmf jar="${jar}" prefix="manifest."/>
-    <trim text="${manifest.Bundle-SymbolicName}" property="symbolicName"/>
-    <trim text="${manifest.Bundle-Version}" property="symbolicVersion"/>
+    <trim text="${manifest.Bundle-SymbolicName}" property="bundleName"/>
+    <trim text="${manifest.Bundle-Version}" property="bundleVersion"/>
+    <listFirst text="${bundleVersion}" delimiter="L" property="extVersion"/>
     
     
     
@@ -198,9 +219,12 @@
     <unwrap text="${className3}" property="className"/>
     -->
     <echo message="Driver class name:${className}"/>
+    <echo message="Driver bundle name:${bundleName}"/>
+    <echo message="Driver bundle version:${bundleVersion}"/>
+    <echo message="Extension Version:${extVersion}"/>
 
 
-    <property name="distl" location="${temp}/extension/${symbolicName}-${symbolicVersion}/"/>
+    <property name="distl" location="${temp}/extension/${bundleName}-${bundleVersion}/"/>
     
     <mkdir dir="${distl}"/>
       
@@ -212,18 +236,23 @@
     <!-- write the manifest -->
     <echo file="${distl}/META-INF/MANIFEST.MF">Manifest-Version: 1.0
 Built-Date: ${NOW}
-version: "${symbolicVersion}"
+version: "${extVersion}"
 id: "${id}"
 name: "${label}"
 description: "${desc}"
 category: "Datasource"
 lucee-core-version: "5.0.0.019"
 start-bundles: false
-jdbc: "[{'label':'${label}','class':'${className}','bundleName':'${symbolicName}','bundleVersion':'${symbolicVersion}'}]"
+jdbc: "[{'label':'${label}','class':'${className}','bundleName':'${bundleName}','bundleVersion':'${bundleVersion}'}]"
 </echo>
 
-    <!-- copy the jars necessary -->
-    <copy file="${jar}" tofile="${distl}/jars/${jarName}"/>
+    <!-- copy the jars necessary
+    <copy file="${jar}" tofile="${distl}/jars/${jarName}"/> -->
+    <copy todir="${distl}/jars/">
+      <fileset dir=".">
+        <include name="*.jar"/>
+      </fileset>
+    </copy>
     
     <!-- copy the jars necessary -->
     <copy file="${cfc}" tofile="${distl}/context/admin/dbdriver/${cfcName}"/>
@@ -238,7 +267,7 @@ jdbc: "[{'label':'${label}','class':'${className}','bundleName':'${symbolicName}
     
 
     <!-- Zip everything  -->
-     <zip destfile="${dist}/${manifest.Bundle-SymbolicName}-${manifest.Bundle-Version}.lex">
+     <zip destfile="${dist}/${bundleName}-${extVersion}.lex">
         <zipfileset dir="${distl}"/>
     </zip>    
   </target>
