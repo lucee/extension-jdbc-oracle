@@ -197,8 +197,8 @@
 
     <!-- Read mf entries -->
     <loadmf jar="${jar}" prefix="manifest."/>
-    <trim text="${manifest.Bundle-SymbolicName}" property="bundleName"/>
-    <trim text="${manifest.Bundle-Version}" property="bundleVersion"/>
+    <!-- <trim text="${manifest.Bundle-SymbolicName}" property="bundleName"/> -->
+    <!-- <trim text="${manifest.Bundle-Version}" property="bundleVersion"/> -->
     <listFirst text="${bundleVersion}" delimiter="L" property="extVersion"/>
     
     
@@ -243,7 +243,7 @@ description: "${desc}"
 category: "Datasource"
 lucee-core-version: "5.0.0.019"
 start-bundles: false
-jdbc: "[{'label':'${label}','class':'${className}','bundleName':'${bundleName}','bundleVersion':'${bundleVersion}'}]"
+jdbc: "[{'label':'${label}','class':'${className}'}]"
 </echo>
 
     <!-- copy the jars necessary
