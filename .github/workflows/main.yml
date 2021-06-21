@@ -14,7 +14,8 @@ jobs:
       oracle:
 
         # Docker Hub image (feel free to change the tag "latest" to any other available one)
-        image: gvenzl/oracle-xe:18-slim # xe
+        # https://hub.docker.com/r/gvenzl/oracle-xe
+        image: gvenzl/oracle-xe:18
 
         # Provide passwords and other environment variables to container
         env:
