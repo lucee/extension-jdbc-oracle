@@ -38,6 +38,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Show Oracle Listener Config
+      run: |
+       sudo lsnrctl status
     - name: Set up JDK 11
       uses: actions/setup-java@v2
       with:
@@ -47,7 +50,10 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/.m2
-        key: lucee-script-runner-maven-cache
+        key: lucee-oracle
+        restore-keys: |
+          ${{ runner.os }}-m2
+          maven-cache
     - name: Cache Lucee files
       uses: actions/cache@v2
       with:
@@ -55,7 +61,7 @@ jobs:
         key: lucee-downloads-${{ env.luceeVersion }}
         restore-keys: |
           lucee-downloads
-    - name: Build with Ant
+    - name: Build extension-jdbc-oracle with Ant
       run: ant -noinput -verbose -buildfile build.xml
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
@@ -67,7 +73,7 @@ jobs:
       with:
         repository: lucee/lucee
         path: lucee
-    - name: Run Lucee Test Suite
+    - name: Run Lucee Test Suite, labels="oracle"
       uses: zspitzer/lucee-script-engine-runner@main
       with:
         webroot: ${{ github.workspace }}/lucee/test
@@ -80,4 +86,4 @@ jobs:
         ORACLE_USERNAME: lucee
         ORACLE_PASSWORD: lucee
         ORACLE_PORT: 1521
-        ORACLE_DATABASE: XEPDB1
+        ORACLE_DATABASE: XE
