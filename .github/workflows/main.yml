@@ -14,13 +14,13 @@ jobs:
       oracle:
 
         # Docker Hub image (feel free to change the tag "latest" to any other available one)
-        image: gvenzl/oracle-xe:18 # xe
+        image: gvenzl/oracle-xe:18-slim # xe
 
         # Provide passwords and other environment variables to container
         env:
-          ORACLE_PASSWORD: lucee
+          ORACLE_PASSWORD: lucee_system
           APP_USER: lucee
-          APP_USER_PASSWORD: lucee
+          APP_USER_PASSWORD: lucee_oracle
 
         # Forward Oracle port
         ports:
@@ -81,6 +81,6 @@ jobs:
         testLabels: oracle
         ORACLE_SERVER: localhost
         ORACLE_USERNAME: lucee
-        ORACLE_PASSWORD: lucee
+        ORACLE_PASSWORD: lucee_oracle
         ORACLE_PORT: 1521
         ORACLE_DATABASE: XE
