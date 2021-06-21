@@ -80,4 +80,4 @@ jobs:
         ORACLE_USERNAME: lucee
         ORACLE_PASSWORD: lucee
         ORACLE_PORT: 1521
-        ORACLE_DATABASE: lucee
+        ORACLE_DATABASE: XEPDB1
