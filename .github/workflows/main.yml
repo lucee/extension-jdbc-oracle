@@ -4,9 +4,13 @@
 name: Java CI
 
 on: [push, pull_request,workflow_dispatch]
+ 
+jobs:
+  build:
 
-services:
- # Oracle service
+    runs-on: ubuntu-latest
+    services:
+     # Oracle service
       oracle:
 
         # Docker Hub image (feel free to change the tag "latest" to any other available one)
@@ -29,10 +33,6 @@ services:
           --health-timeout 5s
           --health-retries 10
 
-jobs:
-  build:
-
-    runs-on: ubuntu-latest
     env:
       luceeVersion: 6.0.0.95-SNAPSHOT
 
@@ -76,3 +76,8 @@ jobs:
         extensionDir: ${{ github.workspace }}/dist
       env:
         testLabels: oracle
+        ORACLE_SERVER: localhost
+        ORACLE_USERNAME: lucee
+        ORACLE_PASSWORD: lucee
+        ORACLE_PORT: 1521
+        ORACLE_DATABASE: lucee
