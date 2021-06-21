@@ -1,0 +1,86 @@
+# This workflow will build a Java project with Ant
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-ant
+
+name: Java CI
+
+on: [push, pull_request,workflow_dispatch]
+ 
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    services:
+     # Oracle service
+      oracle:
+
+        # Docker Hub image (feel free to change the tag "latest" to any other available one)
+        image: gvenzl/oracle-xe:18 # xe
+
+        # Provide passwords and other environment variables to container
+        env:
+          ORACLE_PASSWORD: lucee
+          APP_USER: lucee
+          APP_USER_PASSWORD: lucee
+
+        # Forward Oracle port
+        ports:
+          - 1521:1521
+
+        # Provide healthcheck script options for startup
+        options: >-
+          --health-cmd healthcheck.sh
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      luceeVersion: 6.0.0.95-SNAPSHOT
+
+    steps:
+    - uses: actions/checkout@v2   
+    - name: Set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'adopt'
+    - name: Cache Maven packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2
+        key: lucee-oracle
+        restore-keys: |
+          ${{ runner.os }}-m2
+          maven-cache
+    - name: Cache Lucee files
+      uses: actions/cache@v2
+      with:
+        path: _actions/zspitzer/lucee-script-engine-runner/main/lucee-download-cache
+        key: lucee-downloads-${{ env.luceeVersion }}
+        restore-keys: |
+          lucee-downloads
+    - name: Build extension-jdbc-oracle with Ant
+      run: ant -noinput -verbose -buildfile build.xml
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: oracle-lex
+        path: dist/*.lex
+    - name: Checkout Lucee
+      uses: actions/checkout@v2
+      with:
+        repository: lucee/lucee
+        path: lucee
+    - name: Run Lucee Test Suite, labels="oracle"
+      uses: zspitzer/lucee-script-engine-runner@main
+      with:
+        webroot: ${{ github.workspace }}/lucee/test
+        execute: /bootstrap-tests.cfm
+        luceeVersion: ${{ env.luceeVersion }}
+        extensionDir: ${{ github.workspace }}/dist
+      env:
+        testLabels: oracle
+        ORACLE_SERVER: localhost
+        ORACLE_USERNAME: lucee
+        ORACLE_PASSWORD: lucee
+        ORACLE_PORT: 1521
+        ORACLE_DATABASE: XE
