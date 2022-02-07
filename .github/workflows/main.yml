@@ -35,7 +35,7 @@ jobs:
           --health-retries 10
 
     env:
-      luceeVersion: 6.0.0.95-SNAPSHOT
+      luceeVersion: light-6.0.0.152-SNAPSHOT
 
     steps:
     - uses: actions/checkout@v2   
@@ -55,7 +55,7 @@ jobs:
     - name: Cache Lucee files
       uses: actions/cache@v2
       with:
-        path: _actions/zspitzer/lucee-script-engine-runner/main/lucee-download-cache
+        path: _actions/lucee/script-engine/main/lucee-download-cache
         key: lucee-downloads-${{ env.luceeVersion }}
         restore-keys: |
           lucee-downloads
@@ -72,7 +72,7 @@ jobs:
         repository: lucee/lucee
         path: lucee
     - name: Run Lucee Test Suite, labels="oracle"
-      uses: zspitzer/lucee-script-engine-runner@main
+      uses: lucee/script-runner@main
       with:
         webroot: ${{ github.workspace }}/lucee/test
         execute: /bootstrap-tests.cfm
