@@ -15,7 +15,7 @@ jobs:
 
         # Docker Hub image (feel free to change the tag "latest" to any other available one)
         # https://hub.docker.com/r/gvenzl/oracle-xe
-        image: gvenzl/oracle-xe:18
+        image: gvenzl/oracle-xe:21
 
         # Provide passwords and other environment variables to container
         env:
@@ -85,4 +85,4 @@ jobs:
         ORACLE_USERNAME: lucee
         ORACLE_PASSWORD: lucee_oracle
         ORACLE_PORT: 1521
-        ORACLE_DATABASE: XE
+        ORACLE_DATABASE: XEPDB1
