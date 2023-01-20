@@ -86,3 +86,4 @@ jobs:
         ORACLE_PASSWORD: lucee_oracle
         ORACLE_PORT: 1521
         ORACLE_DATABASE: XEPDB1
+        ORACLE_SYSTEM_PASSWORD: lucee_system
