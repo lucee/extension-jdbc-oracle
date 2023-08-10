@@ -35,7 +35,7 @@ jobs:
           --health-retries 10
 
     env:
-      luceeVersion: light-6.0.0.328-SNAPSHOT
+      luceeVersion: 0/all/light
 
     steps:
     - uses: actions/checkout@v3
@@ -48,17 +48,12 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.m2
-        key: lucee-oracle
-        restore-keys: |
-          ${{ runner.os }}-m2
-          maven-cache
+        key: maven-cache
     - name: Cache Lucee files
       uses: actions/cache@v3
       with:
         path: _actions/lucee/script-engine/main/lucee-download-cache
-        key: lucee-downloads-${{ env.luceeVersion }}
-        restore-keys: |
-          lucee-downloads
+        key: lucee-downloads
     - name: Build extension-jdbc-oracle with Ant
       run: ant -noinput -verbose -buildfile build.xml
     - name: Upload Artifact
@@ -76,7 +71,7 @@ jobs:
       with:
         webroot: ${{ github.workspace }}/lucee/test
         execute: /bootstrap-tests.cfm
-        luceeVersion: ${{ env.luceeVersion }}
+        luceeVersionQuery: ${{ env.luceeVersionQuery }}
         extensionDir: ${{ github.workspace }}/dist
       env:
         testAdditional: ${{ github.workspace }}/tests
