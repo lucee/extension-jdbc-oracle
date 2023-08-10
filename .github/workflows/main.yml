@@ -35,7 +35,7 @@ jobs:
           --health-retries 10
 
     env:
-      luceeVersion: 0/all/light
+      luceeVersionQuery: 0/all/light
 
     steps:
     - uses: actions/checkout@v3
