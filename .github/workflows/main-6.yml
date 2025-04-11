@@ -1,9 +1,9 @@
 # This workflow will build a Java project with Ant
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-ant
 
-name: Java CI - Lucee 7.0
+name: Java CI - Lucee 6.0
 
-on: [push, pull_request,workflow_dispatch]
+on: [workflow_dispatch]
  
 jobs:
   build:
@@ -35,7 +35,7 @@ jobs:
           --health-retries 10
 
     env:
-      luceeVersionQuery: 7/all/light
+      luceeVersionQuery: 6/all/light
 
     steps:
     - uses: actions/checkout@v4
