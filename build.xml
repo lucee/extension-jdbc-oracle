@@ -3,12 +3,9 @@
 	<description>
         Building Datasource Extension
     </description>
-  <!--
-  <property name="label" value="Microsoft SQL Server (Vendor Microsoft)"/>
-  <property name="id" value="7E673D15-D87C-41A6-8B5F1956528C605F"/>
-  -->
+
   <property name="temp" location="temp"/>
-  <property name="dist"  location="dist"/>
+  <property name="dist"  location="target"/>
 
   <scriptdef name="trim" language="javascript">
      <attribute name="text" />
@@ -185,14 +182,15 @@
     <unwrap text="${label}" property="label"/>
     <unwrap text="${description}" property="desc"/>
 
+    <echo message="==================="/>
     <echo message="${id}"/>
     <echo message="${label}"/>
     <echo message="${desc}"/>
     <echo message="${jar}"/>
     <echo message="${cfc}"/>
     <echo message="${cfcName}"/>
-    <echo message="${dir}"/>
-    <echo message="${prop}"/>
+    <echo message="${connstr}"/>
+    <echo message="${jdbcid}"/>
 
 
     <!-- Read mf entries -->
@@ -200,7 +198,6 @@
     <trim text="${manifest.Bundle-SymbolicName}" property="bundleName"/>
     <trim text="${manifest.Bundle-Version}" property="bundleVersion"/>
     <listFirst text="${bundleVersion}" delimiter="L" property="extVersion"/>
-    
     
     
     <!-- read class info -->
@@ -246,15 +243,10 @@ start-bundles: false
 jdbc: "[{'label':'${label}','class':'${className}','bundleName':'${bundleName}','bundleVersion':'${bundleVersion}'}]"
 </echo>
 
-    <!-- copy the jars necessary
-    <copy file="${jar}" tofile="${distl}/jars/${jarName}"/> -->
-    <copy todir="${distl}/jars/">
-      <fileset dir=".">
-        <include name="*.jar"/>
-      </fileset>
-    </copy>
-    
     <!-- copy the jars necessary -->
+    <copy file="${jar}" tofile="${distl}/jars/${bundleName}-${bundleVersion}.jar"/>
+    
+    <!-- copy the component necessary -->
     <copy file="${cfc}" tofile="${distl}/context/admin/dbdriver/${cfcName}"/>
 
     <!-- copy optional logo -->
@@ -267,7 +259,7 @@ jdbc: "[{'label':'${label}','class':'${className}','bundleName':'${bundleName}',
     
 
     <!-- Zip everything  -->
-     <zip destfile="${dist}/${bundleName}-${extVersion}.lex">
+    <zip destfile="${dist}/${filename}-${manifest.Bundle-Version}.lex">
         <zipfileset dir="${distl}"/>
     </zip>    
   </target>
