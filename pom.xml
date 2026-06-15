@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.lucee</groupId>
     <artifactId>oracle-jdbc-extension</artifactId>
-    <version>21.19.0.1-ojdbc11</version>
+    <version>23.26.0.0-ojdbc11</version>
     <packaging>pom</packaging>
     <name>Oracle JDBC</name>
 
