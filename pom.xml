@@ -4,15 +4,18 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.lucee</groupId>
     <artifactId>oracle-jdbc-extension</artifactId>
-    <version>23.26.0.0-ojdbc11</version>
+    <version>21.19.0.1-ojdbc11</version>
     <packaging>pom</packaging>
     <name>Oracle JDBC</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <id>D4EDFDBD-A9A3-E9AF-597322D767E0C949</id>
+        <image>https://raw.githubusercontent.com/lucee/extension-jdbc-oracle/master/source/images/logo.png</image>
+        <buildDate>${maven.build.timestamp}</buildDate>
         <luceeCoreVersion>5.0.0.0</luceeCoreVersion>
         <releaseType>server</releaseType>
         <connstr>jdbc:oracle:{drivertype}:@{host}:{port}:{database}</connstr>
@@ -119,8 +122,33 @@
 
     <build>
         <plugins>
-
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <configuration>
+                    <flattenMode>bom</flattenMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>3.2.0</version>
