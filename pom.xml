@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://www.w3.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.lucee</groupId>
     <artifactId>oracle-jdbc-extension</artifactId>
-    <version>23.26.0.0-ojdbc11</version>
+    <version>23.8.0.25.04-ojdbc11</version>
     <packaging>pom</packaging>
     <name>Oracle JDBC</name>
 
@@ -17,16 +17,20 @@
         <image>https://raw.githubusercontent.com/lucee/extension-jdbc-oracle/master/source/images/logo.png</image>
         <buildDate>${maven.build.timestamp}</buildDate>
         <luceeCoreVersion>5.0.0.0</luceeCoreVersion>
-        <releaseType>server</releaseType>
         <connstr>jdbc:oracle:{drivertype}:@{host}:{port}:{database}</connstr>
-        <connstrOld>jdbc:oracle:thin:@{host}:{port}:{database}</connstrOld>
         <jdbcid>oracle</jdbcid>
-        <category>database</category>
-        <className>oracle.jdbc.OracleDriver</className>
         <label>Oracle JDBC Driver</label>
+        <releaseType>server</releaseType>
+        <driverClass>oracle.jdbc.OracleDriver</driverClass>
+        <bundleName>org.lucee.oracle</bundleName>
+        <bundleVersion>23.26.0.0-ojdbc11</bundleVersion>
+        <mvnGroupId>com.oracle.database.jdbc</mvnGroupId>
+        <mvnArtifactId>ojdbc11</mvnArtifactId>
+        <mvnVersion>23.8.0.25.04</mvnVersion>
         <release.url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</release.url>
         <snapshot.url>https://oss.sonatype.org/content/repositories/snapshots/</snapshot.url>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.openjdk.nashorn</groupId>
@@ -35,11 +39,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.lucee</groupId>
-            <artifactId>oracle</artifactId>
-            <version>${project.version}</version>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc11</artifactId>
+            <version>${mvnVersion}</version>
         </dependency>
     </dependencies>
+
     <scm>
         <url>https://github.com/lucee/extension-jdbc-oracle</url>
         <connection>scm:git:git://github.com/lucee/extension-jdbc-oracle.git</connection>
@@ -84,7 +89,6 @@
             </activation>
             <build>
                 <plugins>
-                    <!-- GPG sign -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
@@ -99,21 +103,22 @@
                                 <configuration>
                                     <files>
                                         <file>${project.build.directory}/${project.artifactId}-${project.version}.lex</file>
+                                        <file>${project.build.directory}/${project.artifactId}-${project.version}.lite.lex</file>
                                     </files>
                                 </configuration>
                             </execution>
                         </executions>
                     </plugin>
                     <plugin>
-                      <groupId>org.apache.maven.plugins</groupId>
-                      <artifactId>maven-release-plugin</artifactId>
-                      <version>3.0.0</version>
-                      <configuration>
-                        <autoVersionSubmodules>true</autoVersionSubmodules>
-                        <useReleaseProfile>false</useReleaseProfile>
-                        <releaseProfiles>release</releaseProfiles>
-                        <goals>deploy</goals>
-                      </configuration>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-release-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <configuration>
+                            <autoVersionSubmodules>true</autoVersionSubmodules>
+                            <useReleaseProfile>false</useReleaseProfile>
+                            <releaseProfiles>release</releaseProfiles>
+                            <goals>deploy</goals>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -147,31 +152,6 @@
                 </executions>
             </plugin>
 
-
-<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.2.0</version>
-                <executions>
-                    <execution>
-                        <id>copy-oracle-jar</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includeGroupIds>org.lucee</includeGroupIds>
-                            <includeArtifactIds>oracle</includeArtifactIds>
-                            <includeVersion>${project.version}</includeVersion> 
-                            <outputDirectory>${project.basedir}</outputDirectory>
-                            <overWriteReleases>false</overWriteReleases>
-                            <overWriteSnapshots>true</overWriteSnapshots>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Antrun plugin to execute the Ant build -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -196,18 +176,20 @@
                                     <property name="label" value="${label}"/>
                                     <property name="description" value="${project.description}"/>
                                     <property name="filename" value="${project.artifactId}"/>
+                                    <property name="groupId" value="${project.groupId}"/>
+                                    <property name="artifactId" value="${project.artifactId}"/>
                                     <property name="jdbcid" value="${jdbcid}"/>
                                     <property name="connstr" value="${connstr}"/>
-                                    <property name="connstrOld" value="${connstrOld}"/>
-                                    <property name="className" value="${className}"/>
+                                    <property name="bundleversion" value="${project.version}"/>
+                                    <property name="luceeCoreVersion" value="${luceeCoreVersion}"/>
+                                    <property name="releaseType" value="${releaseType}"/>
+                                    <property name="driverClass" value="${driverClass}"/>
+                                    <property name="bundleName" value="${bundleName}"/>
+                                    <property name="bundleVersion" value="${bundleVersion}"/>
+                                    <property name="mvnGroupId" value="${mvnGroupId}"/>
+                                    <property name="mvnArtifactId" value="${mvnArtifactId}"/>
+                                    <property name="mvnVersion" value="${mvnVersion}"/>
                                 </ant>
-
-                                <!-- Clean up the copied oracle JAR after ant build -->
-                                <delete>
-                                    <fileset dir="${project.basedir}">
-                                        <include name="oracle-*.jar"/>
-                                    </fileset>
-                                </delete>
 
                                 <condition property="isSnapshot" value="true" else="false">
                                     <matches string="${project.version}" pattern=".*-SNAPSHOT"/>
@@ -226,9 +208,6 @@
                 </executions>
             </plugin>
 
-           
-
-            <!-- Build Helper Plugin to attach additional artifacts -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -246,13 +225,17 @@
                                     <file>${project.build.directory}/${project.artifactId}-${project.version}.lex</file>
                                     <type>lex</type>
                                 </artifact>
+                                <artifact>
+                                    <file>${project.build.directory}/${project.artifactId}-${project.version}.lite.lex</file>
+                                    <type>lex</type>
+                                    <classifier>lite</classifier>
+                                </artifact>
                             </artifacts>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
 
-            <!-- Clean plugin to remove extra folders -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
@@ -284,7 +267,6 @@
                 </executions>
             </plugin>
 
-            <!-- Maven Deploy Plugin to deploy the .lex file -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
@@ -306,19 +288,35 @@
                             <packaging>lex</packaging>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>deploy-lite</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>deploy-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>${project.build.directory}/${project.artifactId}-${project.version}.lite.lex</file>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>${project.artifactId}</artifactId>
+                            <version>${project.version}</version>
+                            <classifier>lite</classifier>
+                            <repositoryId>ossrh</repositoryId>
+                            <url>${deploy.url}</url>
+                            <packaging>lex</packaging>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
-            <!-- Nexus Staging Maven Plugin to automate the release process -->
             <plugin>
-              <groupId>org.sonatype.central</groupId>
-              <artifactId>central-publishing-maven-plugin</artifactId>
-              <version>0.8.0</version>
-              <extensions>true</extensions>
-              <configuration>
-                <publishingServerId>ossrh</publishingServerId>
-                <autoPublish>true</autoPublish>
-              </configuration>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.8.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>ossrh</publishingServerId>
+                    <autoPublish>true</autoPublish>
+                </configuration>
             </plugin>
         </plugins>
     </build>
