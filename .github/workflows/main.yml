@@ -169,3 +169,28 @@ jobs:
             echo "------- Maven Deploy release on ${{ github.event_name }} -------";
             mvn -B -e -f pom.xml clean deploy -DperformRelease=true --settings maven-settings.xml
           fi
+
+      # everything the S3 upload needs (LDEV-6568): full and lite .lex plus the flattened POM
+      - name: Upload artifact for S3
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: oracle-s3
+          include-hidden-files: true
+          path: |
+            target/*.lex
+            .flattened-pom.xml
+
+  # LDEV-6568: upload the published .lex into the Maven layout on the lucee-downloads bucket (and R2)
+  s3:
+    needs: [setup, deploy]
+    if: >-
+      always() && needs.deploy.result == 'success'
+      && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+      && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    uses: lucee/lucee/.github/workflows/extension-s3-upload.yml@7.1
+    with:
+      artifact-name: oracle-s3
+      version: ${{ needs.setup.outputs.version }}
+    secrets: inherit
+
