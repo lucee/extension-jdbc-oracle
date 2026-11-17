@@ -1,7 +1,7 @@
 component extends="org.lucee.cfml.test.LuceeTestCase" labels="oracle" {
 
 	// keep in sync with pom.xml mvnVersion (major.minor.patch prefix)
-	variables.mavenDriverVersionPrefix = "23.8.0.25.04";
+	variables.mavenDriverVersionPrefix = "23.26.4";
 
 	function isNotSupported() {
 		return isEmpty( server.getDatasource( "oracle" ) );

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.lucee</groupId>
     <artifactId>oracle-jdbc-extension</artifactId>
-    <version>23.8.0.25.04-ojdbc11</version>
+    <version>23.26.4.0.0-ojdbc11</version>
     <packaging>pom</packaging>
     <name>Oracle JDBC</name>
 
@@ -26,7 +26,7 @@
         <bundleVersion>23.26.0.0-ojdbc11</bundleVersion>
         <mvnGroupId>com.oracle.database.jdbc</mvnGroupId>
         <mvnArtifactId>ojdbc11</mvnArtifactId>
-        <mvnVersion>23.8.0.25.04</mvnVersion>
+        <mvnVersion>23.26.4.0.0</mvnVersion>
         <release.url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</release.url>
         <snapshot.url>https://oss.sonatype.org/content/repositories/snapshots/</snapshot.url>
     </properties>
