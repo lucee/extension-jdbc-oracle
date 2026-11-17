@@ -153,7 +153,9 @@ jobs:
           ORACLE_USERNAME: lucee
           ORACLE_PASSWORD: lucee_oracle
           ORACLE_PORT: 1521
-          ORACLE_DATABASE: XE
+          # gvenzl/oracle-xe creates APP_USER in the pluggable database XEPDB1, not in the XE container,
+          # so connecting to XE failed with ORA-01017 and the database specs were skipped
+          ORACLE_DATABASE: XEPDB1
 
   deploy:
     runs-on: ubuntu-latest
