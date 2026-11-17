@@ -40,7 +40,8 @@ jobs:
         id: lucee-matrix
         env:
           TEST_VERSIONS: ${{ vars.LUCEE_TEST_VERSIONS_PLUS }}
-          FALLBACK_LINES: "6.2 7.0 7.1 8.0 9.0"
+          # 6.x is left out here: the Lucee test suite is checked out from the 7.0 branch and has core specs 6.x does not pass
+          FALLBACK_LINES: "7.0 7.1 8.0 9.0"
           # LDEV-6911: the extension must install on Lucee 8.0 and 9.0, so they are always tested
           REQUIRED_LINES: "8.0 9.0"
         run: |
@@ -156,6 +157,8 @@ jobs:
           # gvenzl/oracle-xe creates APP_USER in the pluggable database XEPDB1, not in the XE container,
           # so connecting to XE failed with ORA-01017 and the database specs were skipped
           ORACLE_DATABASE: XEPDB1
+          # tests/cursors.cfc reads v$sesstat as sys, with the password the service sets for SYS/SYSTEM
+          ORACLE_SYSTEM_PASSWORD: lucee_system
 
   deploy:
     runs-on: ubuntu-latest
